@@ -6,13 +6,15 @@ import com.lms.leave_management_system.repository.LeaveApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import com.lms.leave_management_system.service.NotificationService;
 
 @Service
 public class ApprovalService {
 
     @Autowired
     private LeaveApplicationRepository leaveRepo;
-
+    @Autowired
+    private NotificationService notificationService;
     public String approveLeave(Long applicationId, String comment) {
         Optional<LeaveApplication> app = leaveRepo.findById(applicationId);
 
@@ -29,7 +31,12 @@ public class ApprovalService {
         app.get().setManagerComment(
                 comment != null ? comment : "Approved.");
         leaveRepo.save(app.get());
-
+        notificationService.notifyApproval(
+                app.get().getEmployee().getName(),
+                app.get().getEmployee().getEmail(),
+                app.get().getLeaveType(),
+                comment != null ? comment : "Approved."
+        );
         return "Success: Leave application " + applicationId +
                 " has been APPROVED for " +
                 app.get().getEmployee().getName() + ".";
@@ -54,7 +61,12 @@ public class ApprovalService {
         app.get().setStatus(Status.REJECTED);
         app.get().setManagerComment(comment);
         leaveRepo.save(app.get());
-
+        notificationService.notifyRejection(
+                app.get().getEmployee().getName(),
+                app.get().getEmployee().getEmail(),
+                app.get().getLeaveType(),
+                comment
+        );
         return "Success: Leave application " + applicationId +
                 " has been REJECTED. Reason: " + comment;
     }

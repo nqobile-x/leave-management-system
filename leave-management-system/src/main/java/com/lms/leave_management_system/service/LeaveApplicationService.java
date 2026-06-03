@@ -24,6 +24,13 @@ public class LeaveApplicationService {
     public String submitLeave(Long employeeId, String leaveType,
                               LocalDate startDate, LocalDate endDate,
                               String reason) {
+// Bug fix v1.1: Clean duplicate leave type values
+        if (leaveType != null && leaveType.contains(",")) {
+            leaveType = leaveType.split(",")[0].trim();
+        }
+
+        // Validate end date is not before start date
+        if (endDate.isBefore(startDate))
 
         // Validate end date is not before start date
         if (endDate.isBefore(startDate)) {

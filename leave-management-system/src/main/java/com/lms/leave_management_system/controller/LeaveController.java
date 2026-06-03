@@ -2,6 +2,7 @@ package com.lms.leave_management_system.controller;
 
 import com.lms.leave_management_system.model.LeaveApplication;
 import com.lms.leave_management_system.service.LeaveApplicationService;
+import com.lms.leave_management_system.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,14 @@ public class LeaveController {
 
     @Autowired
     private LeaveApplicationService leaveService;
+    @Autowired
+    private NotificationService notificationService;
 
+    @GetMapping("/notifications")
+    public ResponseEntity<?> getNotifications() {
+        return ResponseEntity.ok(
+                notificationService.getAllNotifications());
+    }
     // Submit a leave application
     @PostMapping("/submit")
     public ResponseEntity<String> submitLeave(
